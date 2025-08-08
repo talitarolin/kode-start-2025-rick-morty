@@ -1,4 +1,4 @@
 class AppRoutes {
-  static const String characterList = '/';
+  static const String home = '/';
   static const String characterDetail = '/character-detail';
 }

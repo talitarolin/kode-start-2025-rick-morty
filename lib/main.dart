@@ -1,9 +1,13 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-import 'core/theme/app_theme.dart';
-import 'features/character/data/models/character_model.dart';
-import 'features/character/presentation/screens/character_list_screen.dart';
-import 'features/character/presentation/screens/character_detail_screen.dart';
-import 'routes/app_routes.dart';
+import 'package:provider/provider.dart';
+import 'package:kode_start_2025_rick_morty/core/theme/app_theme.dart';
+import 'package:kode_start_2025_rick_morty/features/character/data/models/character_model.dart';
+import 'package:kode_start_2025_rick_morty/features/character/data/providers/character_provider.dart';
+import 'package:kode_start_2025_rick_morty/features/character/presentation/screens/character_detail_screen.dart';
+import 'package:kode_start_2025_rick_morty/features/character/presentation/screens/character_list_screen.dart';
+import 'package:kode_start_2025_rick_morty/routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,23 +18,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Rick and Morty App',
-      theme: AppTheme.darkTheme,
-      initialRoute: AppRoutes.characterList,
-      routes: {
-        AppRoutes.characterList: (context) => const CharacterListScreen(),
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == AppRoutes.characterDetail) {
-          final CharacterModel character = settings.arguments as CharacterModel;
-          return MaterialPageRoute(
-            builder: (context) => CharacterDetailScreen(character: character),
-            settings: settings,
-          );
-        }
-        return null;
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CharacterProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Rick and Morty App',
+        theme: AppTheme.darkTheme,
+        initialRoute: AppRoutes.home,
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case AppRoutes.home:
+              return MaterialPageRoute(builder: (_) => const CharacterListScreen());
+            case AppRoutes.characterDetail:
+              final character = settings.arguments as CharacterModel;
+              return MaterialPageRoute(
+                builder: (_) => CharacterDetailScreen(character: character),
+              );
+            default:
+              return null;
+          }
+        },
+      ),
     );
   }
 }

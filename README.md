@@ -1,3 +1,4 @@
+ HEAD
 # Kode Start by Kobe
 
 Neste repositório se encontram os aplicativos desenvolvidos durante as aulas, outros projetos desenvolvidos ao longo do programa e, também, documentações
@@ -335,3 +336,21 @@ Utilização para tarefas que devem ser feitas de forma assíncrona.
      .catchError((error)=>print(error));
     }
 
+
+# kode_start_2025_rick_morty
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+ d90772d (feat: Implementação Inicial da Arquitetura e Funcionalidades Core)
