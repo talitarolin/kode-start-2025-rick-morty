@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
           final CharacterModel character = settings.arguments as CharacterModel;
           return MaterialPageRoute(
             builder: (context) => CharacterDetailScreen(character: character),
+            settings: settings,
           );
         }
         return null;
