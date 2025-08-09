@@ -24,7 +24,6 @@ class CharacterCard extends StatelessWidget {
         elevation: 4,
         child: Stack(
           children: [
-            // Imagem do Personagem (parte inferior do Stack)
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -37,7 +36,6 @@ class CharacterCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Card Azul sobreposto (parte superior do Stack)
             Positioned(
               bottom: 0,
               left: 0,
@@ -53,10 +51,9 @@ class CharacterCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Nome do Personagem (posicionado sobre o card azul)
             Positioned(
-              bottom: 11.5, // Altura do card (40) - (14.5 / 2) - padding, ajustado para centralizar
-              left: 6, // Padding left
+              bottom: 11.5, 
+              left: 6, 
               child: Text(
                 character.name.toUpperCase(),
                 style: GoogleFonts.lato(

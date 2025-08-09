@@ -45,8 +45,8 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Altura total do cabeçalho ajustada para o tamanho correto do logo e texto
-    const customHeaderHeight = 55.92 + 102; // Aumentado em 2 pixels
+
+    const customHeaderHeight = 55.92 + 102;
 
     return SafeArea(
       child: Scaffold(
@@ -79,9 +79,9 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
                 }
                 final character = provider.characters[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0), // Espaçamento entre os cards
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: SizedBox(
-                    height: 160, // A altura de cada card
+                    height: 160,
                     child: CharacterCard(
                       character: character,
                       onTap: () {
@@ -105,7 +105,6 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
       height: 55.92 + 102,
       child: Stack(
         children: [
-          // BARRA SUPERIOR (Ícones)
           Positioned(
             top: 0,
             left: 0,
@@ -119,21 +118,21 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
                 children: [
                   Icon(
                     Icons.menu,
-                    size: 24, // Ajustado para ser ligeiramente maior
+                    size: 24, 
                     color: Colors.white,
                   ),
                   Icon(
                     Icons.person_outline,
-                    size: 28, // Ajustado para ser ligeiramente maior
+                    size: 28, 
                     color: const Color(0xFFCAC4D0),
                   ),
                 ],
               ),
             ),
           ),
-          // SEGUNDA SEÇÃO DO CABEÇALHO (LOGO E TEXTO)
+
           Positioned(
-            top: 35.0, // POSIÇÃO AJUSTADA AQUI
+            top: 35.0,
             left: 0,
             right: 0,
             bottom: 0,
@@ -145,16 +144,16 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
                   Image.asset(
                     'assets/images/Group_1192x.webp',
                     width: 115,
-                    height: 76.98, // Restaurado o tamanho original do logo
+                    height: 76.98,
                   ),
-                  const SizedBox(height: 2), // Reduzido o espaçamento
+                  const SizedBox(height: 2),
                   Text(
                     'RICK AND MORTY API',
                     style: GoogleFonts.lato(
                       color: Colors.white,
-                      fontSize: 16, // Aumentado o tamanho da fonte
+                      fontSize: 16, 
                       fontWeight: FontWeight.w400,
-                      letterSpacing: 2.5, // Aumentado o espaçamento entre letras
+                      letterSpacing: 2.5, 
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -167,7 +166,6 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
     );
   }
 
-  // MÉTODO _buildSearchHeader() com ajustes
   Widget _buildSearchHeader() {
     return Container(
       key: const ValueKey<bool>(true),
@@ -175,7 +173,6 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
       height: 55.92 + 102,
       child: Stack(
         children: [
-          // BARRA SUPERIOR (Ícones de busca)
           Positioned(
             top: 0,
             left: 0,
