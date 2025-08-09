@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kode_start_2025_rick_morty/features/character/data/models/character_model.dart';
 
 class CharacterCard extends StatelessWidget {
@@ -7,43 +8,49 @@ class CharacterCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const CharacterCard({
-    Key? key,
+    super.key,
     required this.character,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Card(
-        shape: RoundedRectangleBorder(
+      child: Container(
+        width: 320,
+        height: 200,
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).cardColor,
         ),
-        elevation: 4,
-        child: Column(
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Hero(
-                  tag: 'character-image-${character.id}',
-                  child: CachedNetworkImage(
-                    imageUrl: character.image,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
+            Positioned.fill(
+              child: Image.network(
+                character.image,
+                fit: BoxFit.cover,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: Text(
-                character.name,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                height: 40,
+                color: const Color(0xFF87A1FA),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  character.name.toUpperCase(), 
+                  style: GoogleFonts.lato(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ],

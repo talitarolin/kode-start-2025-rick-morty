@@ -52,15 +52,11 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(customHeaderHeight),
-        // Adicionando SafeArea para evitar a barra de notificação
-        child: SafeArea(
-          bottom: false, // O conteúdo do corpo já tem sua própria rolagem
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: isSearching
-                ? _buildSearchHeader()
-                : _buildDefaultHeader(),
-          ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: isSearching
+              ? _buildSearchHeader()
+              : _buildDefaultHeader(),
         ),
       ),
       body: Consumer<CharacterProvider>(
@@ -73,28 +69,25 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
             return const Center(child: Text('Nenhum personagem encontrado. Experimente palavras-chave diferentes.'));
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(16.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: provider.characters.length + (provider.hasMoreData && !provider.hasSearched ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == provider.characters.length && !provider.hasSearched) {
-                if (!provider.isLoading) {
-                  provider.loadMoreCharacters();
-                }
-                return const Center(child: CircularProgressIndicator());
-              }
-              final character = provider.characters[index];
-              return CharacterCard(
+          return ListView.builder(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+    itemCount: provider.characters.length + (provider.hasMoreData && !provider.hasSearched ? 1 : 0),
+    itemBuilder: (context, index) {
+        if (index == provider.characters.length && !provider.hasSearched) {
+            if (!provider.isLoading) {
+                provider.loadMoreCharacters();
+            }
+            return const Center(child: CircularProgressIndicator());
+        }
+        final character = provider.characters[index];
+        return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: CharacterCard(
                 character: character,
                 onTap: () {
-                  Navigator.of(context).pushNamed(AppRoutes.characterDetail, arguments: character);
+                    Navigator.of(context).pushNamed(AppRoutes.characterDetail, arguments: character);
                 },
+                ),
               );
             },
           );
@@ -103,51 +96,45 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
     );
   }
 
- Widget _buildDefaultHeader() {
+  Widget _buildDefaultHeader() {
     return Container(
       key: const ValueKey<bool>(false),
-      width: double.infinity,
       height: 55.92 + 75,
-      color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          // Layout do cabeçalho como uma coluna
-          Column(
-            children: [
-              // Retângulo do topo com ícones
-              Container(
-                width: double.infinity,
-                height: 55.92,
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.menu, size: 20.97, color: Colors.white),
-                    Icon(Icons.person_outline, size: 31.46, color: Colors.white),
-                  ],
-                ),
-              ),
-              // Retângulo de baixo com o título
-              Container(
-                width: double.infinity,
-                height: 75,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: const Center(
-                  child: Text(
-                    'RICK AND MORTY API',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Lato', // AQUI está a correção da fonte
-                      fontWeight: FontWeight.w400, // AQUI está a correção do peso
-                      fontSize: 14.5,
-                      letterSpacing: 2.39, // 16.5% de 14.5px
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          Container(
+            width: double.infinity,
+            height: 55.92,
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 14),
+                const Icon(Icons.menu, size: 20.97, color: Colors.white),
+                const Spacer(),
+                const Icon(Icons.person_outline, size: 31.45, color: Colors.white),
+                const SizedBox(width: 14),
+              ],
+            ),
           ),
-          // Logo "Group 1192x.webp" sobrepondo os retângulos
+          Positioned(
+            top: 55.92,
+            child: Container(
+              width: double.infinity,
+              height: 75,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              alignment: Alignment.center,
+              child: const Text(
+                'RICK AND MORTY API',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
           Positioned(
             top: 10,
             left: 123,
@@ -165,53 +152,56 @@ class _CharacterListScreenState extends State<CharacterListScreen> {
   Widget _buildSearchHeader() {
     return Container(
       key: const ValueKey<bool>(true),
-      width: double.infinity,
       height: 55.92 + 75,
-      color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 55.92,
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Icon(Icons.arrow_back_ios, size: 20.97, color: Colors.white),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 31.45, color: Colors.white),
-                      onPressed: () {
-                        setState(() {
-                          isSearching = false;
-                          searchController.clear();
-                          Provider.of<CharacterProvider>(context, listen: false).clearSearch();
-                        });
-                      },
-                    ),
-                  ],
+          Container(
+            width: double.infinity,
+            height: 55.92,
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 14),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20.97, color: Colors.white),
+                  onPressed: () {},
                 ),
-              ),
-              Container(
-                width: double.infinity,
-                height: 75,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Center(
-                  child: TextField(
-                    controller: searchController,
-                    style: const TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar personagem...',
-                      hintStyle: TextStyle(color: Colors.white70),
-                      border: InputBorder.none,
-                    ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 31.45, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                      searchController.clear();
+                      Provider.of<CharacterProvider>(context, listen: false).clearSearch();
+                    });
+                  },
+                ),
+                const SizedBox(width: 14),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 55.92,
+            child: Container(
+              width: double.infinity,
+              height: 75,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Center(
+                child: TextField(
+                  controller: searchController,
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Colors.white,
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar personagem...',
+                    hintStyle: TextStyle(color: Colors.white70),
+                    border: InputBorder.none,
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
