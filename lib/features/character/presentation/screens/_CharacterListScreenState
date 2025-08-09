@@ -1,104 +1,190 @@
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: _isSearching
-        ? AppBar(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            title: TextField(
-              controller: _searchController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                hintText: "Digite o nome... ou chame o Meeseeks",
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'dart:async';
+import 'package:kode_start_2025_rick_morty/features/character/data/providers/character_provider.dart';
+import 'package:kode_start_2025_rick_morty/features/character/presentation/widgets/character_card.dart';
+import 'package:kode_start_2025_rick_morty/routes/app_routes.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class CharacterListScreen extends StatefulWidget {
+  const CharacterListScreen({super.key});
+
+  @override
+  State<CharacterListScreen> createState() => _CharacterListScreenState();
+}
+
+class _CharacterListScreenState extends State<CharacterListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  Timer? _debounce;
+  bool _isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CharacterProvider>(context, listen: false).fetchFirstPage();
+    _searchController.addListener(_onSearchChanged);
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_searchController.text.isEmpty) {
+        Provider.of<CharacterProvider>(context, listen: false).clearSearch();
+        setState(() {
+          _isSearching = false;
+        });
+      } else {
+        Provider.of<CharacterProvider>(context, listen: false).searchCharacters(_searchController.text);
+      }
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+        !Provider.of<CharacterProvider>(context, listen: false).isLoading) {
+      Provider.of<CharacterProvider>(context, listen: false).loadMoreCharacters();
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(130),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _isSearching ? _buildSearchHeader() : _buildDefaultHeader(),
+        ),
+      ),
+      body: Consumer<CharacterProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.characters.isEmpty && !_isSearching) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.hasSearched && provider.characters.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/no_results.png', height: 150),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Nenhum resultado encontrado. Wubba lubba dub dub!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                if (_debounce?.isActive ?? false) _debounce!.cancel();
-                _debounce = Timer(const Duration(milliseconds: 500), () {
-                  Provider.of<CharacterProvider>(context, listen: false).searchCharacters(value);
-                });
-              },
+            );
+          }
+
+          return GridView.builder(
+            controller: _scrollController,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.7,
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                setState(() {
-                  _isSearching = false;
-                  _searchController.clear();
-                  Provider.of<CharacterProvider>(context, listen: false).fetchFirstPage();
-                });
-              },
-            ),
-          )
-        : AppBar(
-            title: Image.asset(
-              'assets/images/Group_1192x.webp',
-              height: 40,
-            ),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  _isSearching = true;
-                });
-              },
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.filter_list),
-                onPressed: () {
-                },
-              ),
-            ],
-          ),
-    body: Consumer<CharacterProvider>(
-      builder: (context, provider, child) {
-        if (provider.hasSearched && provider.characters.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/images/no_results.png', height: 150),
-                const SizedBox(height: 16),
-                const Text(
-                  "Nenhum resultado encontrado. Wubba lubba dub dub!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.all(16),
+            itemCount: provider.characters.length + (provider.hasMoreData && !_isSearching ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < provider.characters.length) {
+                final character = provider.characters[index];
+                return CharacterCard(
+                  character: character,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.characterDetail,
+                      arguments: character,
+                    );
+                  },
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           );
-        }
-        return GridView.builder(
-          controller: _scrollController,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.7,
-          ),
-          padding: const EdgeInsets.all(16),
-          itemCount: provider.characters.length + (provider.hasMoreData ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < provider.characters.length) {
-              final character = provider.characters[index];
-              return CharacterCard(
-                character: character,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.characterDetail,
-                    arguments: character,
-                  );
-                },
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
+        },
+      ),
+    );
+  }
+
+  Widget _buildDefaultHeader() {
+    return AppBar(
+      key: const ValueKey<bool>(false),
+      title: Image.asset(
+        'assets/images/Group_1192x.webp',
+        height: 70,
+      ),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: () {
+          setState(() {
+            _isSearching = true;
+          });
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.filter_list),
+          onPressed: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchHeader() {
+    return AppBar(
+      key: const ValueKey<bool>(true),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            _isSearching = false;
+            _searchController.clear();
+            Provider.of<CharacterProvider>(context, listen: false).fetchFirstPage();
+          });
+        },
+      ),
+      title: TextField(
+        controller: _searchController,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Buscar personagem...',
+          hintStyle: GoogleFonts.montserrat(color: Colors.white54),
+          border: InputBorder.none,
+        ),
+        onSubmitted: (_) {
+          if (_searchController.text.isNotEmpty) {
+            Provider.of<CharacterProvider>(context, listen: false).searchCharacters(_searchController.text);
+          }
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            _searchController.clear();
+            Provider.of<CharacterProvider>(context, listen: false).clearSearch();
           },
-        );
-      },
-    ),
-  );
+        ),
+      ],
+    );
+  }
 }
