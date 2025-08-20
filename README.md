@@ -24,9 +24,9 @@ lib/
 │   └── theme/
 └── common/
     ├── components/
-    └── utils/```
+    └── utils/
 '''
-
+```
 ---
 
 ## 📄 Funcionalidades Implementadas
