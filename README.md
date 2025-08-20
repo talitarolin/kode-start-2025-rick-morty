@@ -17,14 +17,14 @@ A versão Android foi implementada com **Kotlin** e **Jetpack Compose**, seguind
 
 lib/
 ├── app/
-│ ├── ui/
-│ │ ├── character/
-│ │ ├── episode/
-│ │ └── home/
-│ └── theme/
+│   ├── ui/
+│   │   ├── character/
+│   │   ├── episode/
+│   │   └── home/
+│   └── theme/
 └── common/
-├── components/
-└── utils/
+    ├── components/
+    └── utils/
 
 
 ---
