@@ -14,7 +14,7 @@ A versão Android foi implementada com **Kotlin** e **Jetpack Compose**, seguind
 - **StateFlow & LaunchedEffect** – gerenciamento reativo de estado  
 
 **Estrutura modularizada do projeto:**
-'''
+```
 lib/
 ├── app/
 │   ├── ui/
@@ -24,7 +24,7 @@ lib/
 │   └── theme/
 └── common/
     ├── components/
-    └── utils/
+    └── utils/```
 '''
 
 ---
